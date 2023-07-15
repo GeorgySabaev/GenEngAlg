@@ -5,7 +5,7 @@
 #include <iostream>
 
 SolverGAE::SolverGAE(KnapsackProblem problem, size_t popSize, size_t popSizeExtended, double survivorPart, double thresholdPart,
-	int mutantWeight, int mutantGuidedWeight, int crossoverWeight, int crossoverGuidedWeight, int insertionWeight) :
+	int mutantWeight, int crossoverWeight, int mutantGuidedWeight, int crossoverGuidedWeight, int insertionWeight) :
 	population(popSize, Chromosome(problem.getSize())),
 	problem(problem),
 	popSize(popSize),
@@ -170,7 +170,6 @@ size_t SolverGAE::generateMask() {
 
 score_t SolverGAE::solver_iteration()
 {
-	std::vector<Chromosome> prevPop = population;
 	population.reserve(popSizeExtended);
 
 	size_t dominantN = generateMask();
@@ -190,7 +189,7 @@ score_t SolverGAE::solver_iteration()
 	}
 	// regular mutation
 	auto mutStart = population.size();
-	std::sample(population.begin(), population.begin() + survivorSize, std::back_inserter(population), mutantSize,
+	std::sample(population.begin(), population.begin() + survivorSize, std::back_inserter(population), mutantGuidedSize,
 		randenginefixed);
 	for (auto i = population.begin() + mutStart; i < population.end(); i += 2)
 	{
@@ -216,7 +215,7 @@ score_t SolverGAE::solver_iteration()
 	}
 	// guided crossover
 	std::vector<size_t> crossedNums;
-	std::sample(popNums.begin(), popNums.begin() + survivorSize, std::back_inserter(crossedNums), crossoverSize / 2,
+	std::sample(popNums.begin(), popNums.begin() + popSize, std::back_inserter(crossedNums), crossoverGuidedSize / 2,
 		randenginefixed);
 	for (size_t i : crossedNums)
 	{

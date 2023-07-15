@@ -32,83 +32,85 @@ void printCSV(std::string path, std::vector<std::vector<score_t>>& table) {
 	out.close();
 }
 
-template<class T>
-score_t benchmarkSolver(T& solver, KnapsackProblem& problem) {
-	score_t best = solver.solver_iteration();
-	if (best != problem.assess(solver.bestResult())) {
-		throw std::runtime_error("Incorrect score.");
-	}
-	return best;
+template <typename T>
+void printFile(std::string path, T obj) {
+	std::ofstream out;
+	out.open(path);
+	out << obj;
+	out.close();
 }
 
-void blockSmall(int n) {
-	// 100 base 150 extended
-	// items 0-10 linear
-	// intervals from 50 to 1000
-	std::vector<std::vector<score_t>> table;
-
-
-}
-
-std::pair<std::vector<std::vector<score_t>>, std::vector<std::vector<score_t>>> blockBase(
-	std::string name, size_t attempt, 
-	size_t iterations, size_t itemSize, int minItem, int maxItem, int minCapacity, int stepCapacity, int maxCapacity, int popSize, int popExtSize) {
-
-	std::uniform_int_distribution<score_t> dist{ minItem, maxItem };
-	auto gen = [&dist]() {
-		return dist(randenginefixed);
-	};
-	std::vector<std::vector<score_t>> tableGASmall;
-	std::vector<std::vector<score_t>> tableGAE;
-	std::vector<std::vector<score_t>> tableGABig;
-
-	std::string nameGASmall;
-	std::stringstream ssNameGASmall;
-	ssNameGASmall << name << "_GA_" << popSize << "_" << attempt;
-	ssNameGASmall >> nameGASmall;
-	std::ofstream streamGAS(nameGASmall);
-
-	std::string nameGABig;
-	std::stringstream ssNameGABig;
-	ssNameGABig << name << "_GA_" << popExtSize << "_" << attempt;
-	ssNameGABig >> nameGABig;
-
-	std::string nameGAE;
-	std::stringstream ssNameGAE;
-	ssNameGAE << name << "_GAE_" << popSize << "_" << popExtSize << "_" << attempt;
-	ssNameGAE >> nameGAE;
-
-	for (size_t j = minCapacity; j < maxCapacity; j += stepCapacity) {
-		std::vector<score_t> scores(itemSize);
-		std::generate(scores.begin(), scores.end(), gen);
-		KnapsackProblem problem(scores, j);
-		SolverGA solverGASmall = SolverGA(problem, popSize, 0.6);
-		SolverGA solverGABig = SolverGA(problem, popExtSize, 0.6);
-		SolverGAE solverGAE = SolverGAE(problem, popSize, popExtSize, 0.6, 0.4, 1, 1, 1, 1, 1);
-
-		tableGABig.emplace_back(iterations + 1);
-		tableGABig.back()[0] = j;
-		/*for (size_t i = 1; i <= iterations; i++) {
-			tableGABig.back()[i] = solverGAB.
-		}*/
+void solveBenchmark(std::string groupName, KnapsackProblem problem, int iterations, int attempts) {
+	std::vector<std::vector<std::vector<score_t>>> results (5);
+	std::string names[5] = { "GA", "GAE1", "GAE2", "GAE3", "GAE" };
+	for (size_t attempt = 0; attempt < attempts; attempt++)
+	{
+		
+		std::vector<SolverGAE> solvers;
+		solvers.push_back(Solvers::getSolverGA(problem));
+		solvers.push_back(Solvers::getSolverGAE1(problem));
+		solvers.push_back(Solvers::getSolverGAE2(problem));
+		solvers.push_back(Solvers::getSolverGAE3(problem));
+		solvers.push_back(Solvers::getSolverGAE(problem));
+		for (size_t i = 0; i < 5; i++)
+		{
+			results[i].emplace_back(iterations);
+			for (size_t j = 0; j < iterations; j++)
+			{
+				std::cout << groupName << "_attempt_" << attempt << "_solver_" << i << "_iteration_" << j << std::endl;
+				results[i].back()[j] = solvers[i].solver_iteration();
+			}
+		}
 	}
-	return {};
+	for (size_t i = 0; i < 5; i++)
+	{
+		printCSV(groupName + "_" + names[i] + ".csv", results[i]);
+	}
 }
 
 int main()
 {
-	std::uniform_int_distribution<score_t> dist{ 1, 52 };
-	auto gen = [&dist]() {
-		return dist(randenginefixed);
+	// - test 1: small, 50% capacity
+	std::uniform_int_distribution<score_t> dist1{ 1, 100 };
+	auto gen1 = [&dist1]() {
+		return dist1(randenginefixed);
 	};
-	std::vector<score_t> scores(100);
-	std::generate(scores.begin(), scores.end(), gen);
-	KnapsackProblem problem(scores, 10000);
-	SolverGA solverGA = Solvers::getSolverGAbasic(problem);
-	SolverGAE solverGAE = Solvers::getSolverGAEbasic(problem);
-	std::cout << "iter#\tGA\tGEA" << std::endl;
-	for (size_t i = 0; i < 20; i++)
-	{
-		std::cout << i + 1 << "\t" << benchmarkSolver(solverGA, problem) << "\t" << benchmarkSolver(solverGAE, problem) << std::endl;
-	}
+	std::vector<score_t> scores1(200);
+	std::generate(scores1.begin(), scores1.end(), gen1);
+	printFile("1_small_input.txt", scores1);
+	KnapsackProblem problem1(scores1, 50*200);
+	solveBenchmark("1_small", problem1, 200, 11);
+
+
+	// - test 2: low bar, 30% capacity
+	std::vector<score_t> scores2(200);
+	std::generate(scores2.begin(), scores2.end(), gen1);
+	printFile("2_low_bar_input.txt", scores2);
+	KnapsackProblem problem2(scores2, 30 * 200);
+	solveBenchmark("2_low_bar", problem2, 200, 11);
+
+	// - test 3: high bar, 80% capacity
+	std::vector<score_t> scores3(200);
+	std::generate(scores3.begin(), scores3.end(), gen1);
+	printFile("3_high_bar_input.txt", scores3);
+	KnapsackProblem problem3(scores3, 80 * 200);
+	solveBenchmark("3_high_bar", problem3, 200, 11);
+
+	// - test 4: large, 50% capacity
+	std::vector<score_t> scores4(1000);
+	std::generate(scores4.begin(), scores4.end(), gen1);
+	printFile("4_large_input.txt", scores4);
+	KnapsackProblem problem4(scores4, 50*1000);
+	solveBenchmark("4_large", problem4, 200, 5);
+
+	// - test 5: heavy_spread, 30% capacity
+	std::uniform_int_distribution<score_t> dist2{ 1, 10 };
+	auto gen2 = [&dist2]() {
+		return std::pow(dist2(randenginefixed), 5);
+	};
+	std::vector<score_t> scores5(200);
+	printFile("5_heavy_spread_input.txt", scores5);
+	std::generate(scores5.begin(), scores5.end(), gen2);
+	KnapsackProblem problem5(scores5, 50000 * 200);
+	solveBenchmark("5_heavy_spread", problem5, 200, 11);
 }

@@ -33,7 +33,7 @@ public:
 	std::vector<Chromosome> mask;
 	std::vector<size_t> popNums;
 	SolverGAE(KnapsackProblem problem, size_t popSize, size_t popSizeExtended, double survivorPart, double thresholdPart,
-		int mutantWeight, int mutantGuidedWeight, int crossoverWeight, int crossoverGuidedWeight, int insertionWeight);
+		int mutantWeight,  int crossoverWeight, int mutantGuidedWeight, int crossoverGuidedWeight, int insertionWeight);
 	Chromosome mutate_reverse_guided(size_t chromosomeN);
 	Chromosome mutate_flip_guided(size_t chromosomeN);
 	void mutate_reverse(Chromosome& chromosome);
