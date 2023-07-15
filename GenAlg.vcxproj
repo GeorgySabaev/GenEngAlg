@@ -144,19 +144,15 @@
     <ClCompile Include="KnapsackProblem.cpp" />
     <ClCompile Include="Chromosome.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Population.cpp" />
-    <ClCompile Include="SolverGA.cpp" />
-    <ClCompile Include="SolverGAE.cpp" />
+    <ClCompile Include="SolverGEA.cpp" />
     <ClCompile Include="Solvers.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="KnapsackProblem.h" />
     <ClInclude Include="gatypes.h" />
     <ClInclude Include="Chromosome.h" />
-    <ClInclude Include="Population.h" />
     <ClInclude Include="RandomUtils.h" />
-    <ClInclude Include="SolverGA.h" />
-    <ClInclude Include="SolverGAE.h" />
+    <ClInclude Include="SolverGEA.h" />
     <ClInclude Include="Solvers.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

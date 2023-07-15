@@ -2,9 +2,8 @@
 #include <vector>
 #include "KnapsackProblem.h"
 #include "gatypes.h"
-#include "Population.h"
 #include "Chromosome.h"
-class SolverGAE
+class SolverGEA
 {
 
 	KnapsackProblem problem;
@@ -32,7 +31,7 @@ public:
 	std::vector<Chromosome> population;
 	std::vector<Chromosome> mask;
 	std::vector<size_t> popNums;
-	SolverGAE(KnapsackProblem problem, size_t popSize, size_t popSizeExtended, double survivorPart, double thresholdPart,
+	SolverGEA(KnapsackProblem problem, size_t popSize, size_t popSizeExtended, double survivorPart, double thresholdPart,
 		int mutantWeight,  int crossoverWeight, int mutantGuidedWeight, int crossoverGuidedWeight, int insertionWeight);
 	Chromosome mutate_reverse_guided(size_t chromosomeN);
 	Chromosome mutate_flip_guided(size_t chromosomeN);

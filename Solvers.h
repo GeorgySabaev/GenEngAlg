@@ -1,15 +1,12 @@
 #pragma once
-#include "SolverGA.h"
-#include "SolverGAE.h"
+#include "SolverGEA.h"
 class Solvers
 {
 public:
-	static SolverGA getSolverGAbasic(KnapsackProblem problem);
-	static SolverGAE getSolverGAEbasic(KnapsackProblem problem);
-	static SolverGAE getSolverGA(KnapsackProblem problem);
-	static SolverGAE getSolverGAE1(KnapsackProblem problem);
-	static SolverGAE getSolverGAE2(KnapsackProblem problem);
-	static SolverGAE getSolverGAE3(KnapsackProblem problem);
-	static SolverGAE getSolverGAE(KnapsackProblem problem);
+	static SolverGEA getSolverGA(KnapsackProblem problem);
+	static SolverGEA getSolverGEA1(KnapsackProblem problem);
+	static SolverGEA getSolverGEA2(KnapsackProblem problem);
+	static SolverGEA getSolverGEA3(KnapsackProblem problem);
+	static SolverGEA getSolverGEA(KnapsackProblem problem);
 };
 

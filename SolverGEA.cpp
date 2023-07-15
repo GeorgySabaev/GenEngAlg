@@ -1,10 +1,10 @@
-#include "SolverGAE.h"
+#include "SolverGEA.h"
 #include <algorithm>
 #include <numeric>
 #include "RandomUtils.h"
 #include <iostream>
 
-SolverGAE::SolverGAE(KnapsackProblem problem, size_t popSize, size_t popSizeExtended, double survivorPart, double thresholdPart,
+SolverGEA::SolverGEA(KnapsackProblem problem, size_t popSize, size_t popSizeExtended, double survivorPart, double thresholdPart,
 	int mutantWeight, int crossoverWeight, int mutantGuidedWeight, int crossoverGuidedWeight, int insertionWeight) :
 	population(popSize, Chromosome(problem.getSize())),
 	problem(problem),
@@ -39,14 +39,14 @@ SolverGAE::SolverGAE(KnapsackProblem problem, size_t popSize, size_t popSizeExte
 	std::sort(population.begin(), population.end(), [&problem](Chromosome a, Chromosome b) {return problem.assess(a) > problem.assess(b); });
 }
 
-void SolverGAE::randomise_population(std::vector<Chromosome>& solutions) {
+void SolverGEA::randomise_population(std::vector<Chromosome>& solutions) {
 	for (auto& c : solutions)
 	{
 		randomise_chromosome(c);
 	}
 }
 
-void SolverGAE::randomise_chromosome(Chromosome& c) {
+void SolverGEA::randomise_chromosome(Chromosome& c) {
 	for (auto i : c.genes)
 	{
 		if (rand() % 2) {
@@ -55,7 +55,7 @@ void SolverGAE::randomise_chromosome(Chromosome& c) {
 	}
 }
 
-Chromosome SolverGAE::mutate_reverse_guided(size_t chromosomeN) {
+Chromosome SolverGEA::mutate_reverse_guided(size_t chromosomeN) {
 	auto chromosome = population[chromosomeN];
 	size_t reverse_end = rand() % chromosomeSize;
 	size_t reverse_begin = (rand() % (chromosomeSize - 1) + reverse_end) % chromosomeSize;
@@ -75,7 +75,7 @@ Chromosome SolverGAE::mutate_reverse_guided(size_t chromosomeN) {
 	}
 	return chromosome;
 }
-Chromosome SolverGAE::mutate_flip_guided(size_t chromosomeN) {
+Chromosome SolverGEA::mutate_flip_guided(size_t chromosomeN) {
 	auto chromosome = population[chromosomeN];
 	std::vector<size_t> unfixed;
 	for (size_t i = 0; i < chromosomeSize; i++)
@@ -94,7 +94,7 @@ Chromosome SolverGAE::mutate_flip_guided(size_t chromosomeN) {
 	return chromosome;
 }
 
-void SolverGAE::mutate_reverse(Chromosome& chromosome) {
+void SolverGEA::mutate_reverse(Chromosome& chromosome) {
 	size_t reverse_end = rand() % chromosomeSize;
 	size_t reverse_begin = (rand() % (chromosomeSize - 1) + reverse_end) % chromosomeSize;
 	if (reverse_begin > reverse_end) {
@@ -104,19 +104,19 @@ void SolverGAE::mutate_reverse(Chromosome& chromosome) {
 		std::vector<bool>::swap(chromosome.genes[reverse_end--], chromosome.genes[reverse_begin++]);
 	}
 }
-void SolverGAE::mutate_flip(Chromosome& chromosome) {
+void SolverGEA::mutate_flip(Chromosome& chromosome) {
 	size_t position = rand() % chromosomeSize;
 	chromosome.genes[position].flip();
 }
 
-void SolverGAE::crossover_single(Chromosome& chromosome1, Chromosome& chromosome2) {
+void SolverGEA::crossover_single(Chromosome& chromosome1, Chromosome& chromosome2) {
 	size_t position = rand() % chromosomeSize;
 	for (size_t i = position; i < chromosomeSize; i++)
 	{
 		std::vector<bool>::swap(chromosome1.genes[i], chromosome2.genes[i]);
 	}
 }
-void SolverGAE::crossover_double(Chromosome& chromosome1, Chromosome& chromosome2) {
+void SolverGEA::crossover_double(Chromosome& chromosome1, Chromosome& chromosome2) {
 	size_t cross_end = rand() % chromosomeSize;
 	size_t cross_begin = (rand() % (chromosomeSize - 1) + cross_end) % chromosomeSize;
 	if (cross_begin > cross_end) {
@@ -128,7 +128,7 @@ void SolverGAE::crossover_double(Chromosome& chromosome1, Chromosome& chromosome
 	}
 }
 
-Chromosome SolverGAE::insert(size_t dominantN, size_t chromosomeN) {
+Chromosome SolverGEA::insert(size_t dominantN, size_t chromosomeN) {
 	auto chromosome = population[chromosomeN];
 	for (size_t i = 0; i < chromosomeSize; i++)
 	{
@@ -140,7 +140,7 @@ Chromosome SolverGAE::insert(size_t dominantN, size_t chromosomeN) {
 	return chromosome;
 }
 
-size_t SolverGAE::generateMask() {
+size_t SolverGEA::generateMask() {
 	mask = std::vector<Chromosome>(population.size(), Chromosome(chromosomeSize));
 	size_t repeats[2][2];
 	std::vector<size_t> lockedNum(population.size());
@@ -168,7 +168,7 @@ size_t SolverGAE::generateMask() {
 
 
 
-score_t SolverGAE::solver_iteration()
+score_t SolverGEA::solver_iteration()
 {
 	population.reserve(popSizeExtended);
 
@@ -243,7 +243,7 @@ score_t SolverGAE::solver_iteration()
 	return problem.assess(population.front());
 }
 
-Chromosome SolverGAE::bestResult()
+Chromosome SolverGEA::bestResult()
 {
 	return population.front();
 }
